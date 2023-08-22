@@ -17,8 +17,16 @@ public class TPSCharacterController : MonoBehaviour
     private bool isRunning;
     private Camera mainCamera;
 
+    public Animator anim;
+
     // Referencia al script de PlayerStats
     private PlayerStats playerStats;
+
+
+    private void Awake()
+    {
+        anim = GetComponent<Animator>();
+    }
 
     private void Start()
     {
@@ -26,10 +34,10 @@ public class TPSCharacterController : MonoBehaviour
         playerStats = GetComponent<PlayerStats>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
+        anim.SetBool("IsGrounded", isGrounded);
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
@@ -39,7 +47,7 @@ public class TPSCharacterController : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
 
         Vector3 movement = GetCameraRelativeMovement(horizontalInput, verticalInput);
-
+        anim.SetFloat("PlayerWalkVelocity", movement.magnitude * walkSpeed);
         isRunning = Input.GetKey(KeyCode.LeftShift) && playerStats.currentEnergy > 0;
 
         float speed = isRunning ? runSpeed : walkSpeed;
@@ -49,12 +57,14 @@ public class TPSCharacterController : MonoBehaviour
             if (Input.GetButtonDown("Jump"))
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                anim.SetTrigger("PlayerJump");
                 isRunning = false; // Desactivar la carrera al saltar
             }
 
             if (isRunning)
             {
                 playerStats.ConsumeEnergy(1);
+                anim.SetFloat("PlayerWalkVelocity", movement.magnitude * runSpeed);
             }
         }
 
