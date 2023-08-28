@@ -8,6 +8,22 @@ public class UiControllerMinimap : MonoBehaviour
     public float distanciaUiY;
     private bool minimapaActivado = true;
 
+    public PlayerInput playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
+    }
     public void AcercarUiMinimap()
     {
         if (distanciaUiY < 3)
@@ -40,7 +56,7 @@ public class UiControllerMinimap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("m"))
+        if (playerInput.Minimap.OpenCloseMinimap.triggered)
         {
             minimapaActivado = !minimapaActivado; // Cambia el estado del minimapa al pulsar la tecla "m"
             UiMinimapa.SetActive(minimapaActivado); // Activa o desactiva el minimapa según el estado actual

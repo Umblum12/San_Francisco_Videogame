@@ -8,6 +8,22 @@ public class FPSController : MonoBehaviour
     private new Transform camera;
     //Esta variable sirve para la sencibilidad que tendra el raton sobre la camara
     public Vector2 Sensibility;
+    public PlayerInput playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -20,10 +36,10 @@ public class FPSController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Esta variable sirve para poder mover la camara en Horizontal el eje y
-        float MovHor = Input.GetAxis("Mouse X");
-        //Esta variable sirve para poder mover la camara en Vertical el eje x
-        float MovVer = Input.GetAxis("Mouse Y");
+        //Esta variable sirve para poder mover la camara en Horizontal el eje x
+        float MovHor = playerInput.PlayerMain.LookCam.ReadValue<Vector2>().x * 0.01f;
+        //Esta variable sirve para poder mover la camara en Vertical el eje y
+        float MovVer = playerInput.PlayerMain.LookCam.ReadValue<Vector2>().y * 0.01f;
         //Este if sirve para rotar la camara en el angulo y
         if (MovHor != 0)
         {

@@ -14,6 +14,22 @@ public class InventoryUI : MonoBehaviour
 
     public List<GameObject> slots = new List<GameObject>();   // Lista de slots creados
 
+    public PlayerInput playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
+    }
     // Llama a InitializeInventoryUI en el inicio del juego
     private void Start()
     {
@@ -92,7 +108,7 @@ public class InventoryUI : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetButtonDown("e"))
+        if (playerInput.Inventory.OpenCloseInventory.triggered)
         {
             Inventario2Activado = !Inventario2Activado; // Cambia el estado del inventario1 al pulsar la tecla "e"
             UiInventario2.SetActive(Inventario2Activado); // Activa o desactiva el inventario1 según el estado actual

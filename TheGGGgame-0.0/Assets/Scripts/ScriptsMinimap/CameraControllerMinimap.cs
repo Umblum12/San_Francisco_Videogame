@@ -7,6 +7,24 @@ public class CameraControllerMinimap : MonoBehaviour
     //camara
     public GameObject cameraMinimapa;
     public float distanciaY;
+
+    public PlayerInput playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,12 +34,12 @@ public class CameraControllerMinimap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("z") && distanciaY <= 19)
+        if (playerInput.PlayerMain.ZoomInCameraMinimap.triggered && distanciaY <= 19)
         {
             distanciaY++;
             cameraMinimapa.transform.position = new Vector3(transform.position.x, distanciaY, transform.position.z);
         }
-        if (Input.GetButtonDown("x") && distanciaY >= 5)
+        if (playerInput.PlayerMain.ZoomOutCameraMinimap.triggered && distanciaY >= 5)
         {
             distanciaY--;
             cameraMinimapa.transform.position = new Vector3(transform.position.x, distanciaY, transform.position.z);

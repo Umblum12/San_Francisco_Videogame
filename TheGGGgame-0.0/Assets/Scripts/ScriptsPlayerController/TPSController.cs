@@ -11,40 +11,57 @@ public class TPSController : MonoBehaviour
     public bool lookAtPlayer = false;
     public bool rotationActive;
     Vector3 mouseDelta = Vector3.zero;
+    Vector2 scrollDelta = Vector2.zero; // Nuevo Vector2 para el scroll
     Vector3 amount = Vector3.zero;
 
     public Vector3 addPos = new Vector3(0, 1.63f, 0);
 
     Quaternion q = Quaternion.identity;
 
+    public PlayerInput playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
+    }
+
     private void Update()
     {
         if (rotationActive)
         {
-            mouseDelta.Set(Input.GetAxisRaw("Mouse X"),
-            Input.GetAxisRaw("Mouse Y"),
-            Input.GetAxisRaw("Mouse ScrollWheel"));
+            mouseDelta.Set(playerInput.PlayerMain.LookCam.ReadValue<Vector2>().x * 0.01f,
+                           playerInput.PlayerMain.LookCam.ReadValue<Vector2>().y * 0.01f,
+                           0); // Z del mouseDelta se establece en 0
 
-            amount += -mouseDelta * sensitivity;
+            scrollDelta = playerInput.PlayerMain.Scroll.ReadValue<Vector2>();
+
+            amount += new Vector3(-mouseDelta.x, -mouseDelta.y, scrollDelta.y) * sensitivity;
             amount.z = Mathf.Clamp(amount.z, 50, 100);
             amount.y = Mathf.Clamp(amount.y, -50, 50);
 
-            q = Quaternion.AngleAxis(-amount.x, Vector3.up) *
-        Quaternion.AngleAxis(amount.y, Vector3.right);
+            q = Quaternion.AngleAxis(amount.x, Vector3.up) *
+                Quaternion.AngleAxis(amount.y, Vector3.right);
 
             Vector3 dirPos = q * Vector3.forward;
             dirPos *= amount.z * 0.1f;
 
-            // Realizar el raycast desde la posición del objetivo hasta la posición de la cámara
             RaycastHit hit;
             if (Physics.Linecast(target.position, target.position - dirPos, out hit))
             {
-                // Ajustar la posición de la cámara para evitar la colisión
                 transform.position = hit.point;
             }
             else
             {
-                // Si no hay colisión, mover la cámara normalmente
                 transform.position = target.position - dirPos;
             }
 
@@ -56,7 +73,7 @@ public class TPSController : MonoBehaviour
             transform.LookAt(target);
         }
 
-        if (Input.GetButton("Fire1"))
+        if (playerInput.PlayerMain.LoockCam.ReadValue<float>() > 0)
         {
             rotationActive = true;
         }

@@ -11,6 +11,23 @@ public class CambioCamara : MonoBehaviour
     public Transform pos1era, pos3era;
     public Transform padre1, padre2, padre3;
     bool Vista;
+
+    public PlayerInput playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -20,12 +37,12 @@ public class CambioCamara : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+        if (playerInput.ChangePerspective.PerspectiveFirstPerson.triggered)
         {
             Vista = true; // Asigna "P" al scroll hacia arriba del mouse
         }
 
-        if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+        if (playerInput.ChangePerspective.PerspectiveThirdPerson.triggered)
         {
             Vista = false; // Asigna "T" al scroll hacia abajo del mouse
         }

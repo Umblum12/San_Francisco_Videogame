@@ -18,6 +18,7 @@ public class TPSCharacterController : MonoBehaviour
     private Camera mainCamera;
 
     public Animator anim;
+    public PlayerInput playerInput;
 
     // Referencia al script de PlayerStats
     private PlayerStats playerStats;
@@ -25,7 +26,18 @@ public class TPSCharacterController : MonoBehaviour
 
     private void Awake()
     {
+        playerInput = new PlayerInput();
         anim = GetComponent<Animator>();
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
     }
 
     private void Start()
@@ -43,18 +55,17 @@ public class TPSCharacterController : MonoBehaviour
             velocity.y = -2f;
         }
 
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        Vector3 movement = GetCameraRelativeMovement(horizontalInput, verticalInput);
+        Vector2 movementInput = playerInput.PlayerMain.Move.ReadValue<Vector2>();
+        Vector3 movement = GetCameraRelativeMovement(movementInput.y, movementInput.x);
+ 
         anim.SetFloat("PlayerWalkVelocity", movement.magnitude * walkSpeed);
-        isRunning = Input.GetKey(KeyCode.LeftShift) && playerStats.currentEnergy > 0;
+        isRunning = playerInput.PlayerMain.Run.ReadValue<float>() > 0 && playerStats.currentEnergy > 0;
 
         float speed = isRunning ? runSpeed : walkSpeed;
 
         if (isGrounded)
         {
-            if (Input.GetButtonDown("Jump"))
+            if (playerInput.PlayerMain.Jump.triggered)
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
                 anim.SetTrigger("PlayerJump");
@@ -80,7 +91,7 @@ public class TPSCharacterController : MonoBehaviour
         }
     }
 
-    private Vector3 GetCameraRelativeMovement(float horizontalInput, float verticalInput)
+    private Vector3 GetCameraRelativeMovement(float movementInputY, float movementInputX)
     {
         Vector3 cameraForward = mainCamera.transform.forward;
         Vector3 cameraRight = mainCamera.transform.right;
@@ -90,6 +101,7 @@ public class TPSCharacterController : MonoBehaviour
         cameraForward.Normalize();
         cameraRight.Normalize();
 
-        return cameraForward * verticalInput + cameraRight * horizontalInput;
+        return cameraForward * movementInputY + cameraRight * movementInputX;
     }
+
 }
