@@ -40,17 +40,17 @@ public class TPSController : MonoBehaviour
         if (rotationActive)
         {
             mouseDelta.Set(playerInput.PlayerMain.LookCam.ReadValue<Vector2>().x * 0.01f,
-                           playerInput.PlayerMain.LookCam.ReadValue<Vector2>().y * 0.01f,
-                           0); // Z del mouseDelta se establece en 0
+                           -playerInput.PlayerMain.LookCam.ReadValue<Vector2>().y * 0.01f,
+                           0);
 
             scrollDelta = playerInput.PlayerMain.Scroll.ReadValue<Vector2>();
 
-            amount += new Vector3(-mouseDelta.x, -mouseDelta.y, scrollDelta.y) * sensitivity;
+            amount += new Vector3(-mouseDelta.x, mouseDelta.y, scrollDelta.y) * sensitivity;
             amount.z = Mathf.Clamp(amount.z, 50, 100);
             amount.y = Mathf.Clamp(amount.y, -50, 50);
 
             q = Quaternion.AngleAxis(amount.x, Vector3.up) *
-                Quaternion.AngleAxis(amount.y, Vector3.right);
+                Quaternion.AngleAxis(-amount.y, Vector3.right); // Invertimos el valor del eje Y aquí
 
             Vector3 dirPos = q * Vector3.forward;
             dirPos *= amount.z * 0.1f;
